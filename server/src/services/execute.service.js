@@ -135,7 +135,7 @@ function _validateParamValues(userParams, paramDefs) {
 
     if (def.param_type === 'multi_value' && Array.isArray(value)) {
       if (value.length > MAX_MULTI_VALUES) {
-        throw new ApiError(400, `Parameter '${def.param_label}' exceeds maximum of ${MAX_MULTI_VALUES} values`);
+        throw new ApiError(400, `Parameter '${def.param_label}' exceeds maximum of ${MAX_MULTI_VALUES} values. Please contact the administrator to process such large data requests.`);
       }
     }
   }

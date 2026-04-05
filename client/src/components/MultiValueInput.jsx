@@ -3,7 +3,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 export default function MultiValueInput({ label, value = [], onChange, error, placeholder = 'Enter values, one per line' }) {
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [isPasting, setIsPasting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const textareaRef = useRef(null);
 
   const addTag = useCallback((rawValue) => {
@@ -30,20 +30,22 @@ export default function MultiValueInput({ label, value = [], onChange, error, pl
   const handlePaste = (e) => {
     e.preventDefault();
     const pasted = e.clipboardData.getData('text');
-    const items = pasted.split(/[,\n\r\t]+/).map((s) => s.trim()).filter(Boolean);
-    const newTags = items.filter((item) => !value.includes(item));
-    if (newTags.length > 0) {
-      onChange([...value, ...newTags]);
-    }
-    setIsPasting(true);
-  };
+    setIsProcessing(true);
 
-  useEffect(() => {
-    if (isPasting) {
-      const timer = setTimeout(() => setIsPasting(false), 200);
-      return () => clearTimeout(timer);
-    }
-  }, [isPasting]);
+    setTimeout(() => {
+      try {
+        const items = pasted.split(/[,\n\r\t]+/).map((s) => s.trim()).filter(Boolean);
+        const currentSet = new Set(value);
+        const newTags = items.filter((item) => !currentSet.has(item));
+        
+        if (newTags.length > 0) {
+          onChange([...value, ...newTags]);
+        }
+      } finally {
+        setIsProcessing(false);
+      }
+    }, 50);
+  };
 
   const handleBlur = () => {
     if (inputValue.trim()) {
@@ -90,7 +92,7 @@ export default function MultiValueInput({ label, value = [], onChange, error, pl
         }}
         onClick={() => textareaRef.current?.focus()}
       >
-        {value.map((tag, idx) => (
+        {value.slice(0, 50).map((tag, idx) => (
           <span
             key={`${tag}-${idx}`}
             className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-sm rounded-md font-medium"
@@ -108,6 +110,16 @@ export default function MultiValueInput({ label, value = [], onChange, error, pl
             </button>
           </span>
         ))}
+        {value.length > 50 && (
+           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-300 text-sm rounded-md font-medium">
+             + {value.length - 50} more
+           </span>
+        )}
+        {isProcessing && (
+           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 text-sm rounded-md font-medium">
+             Processing...
+           </span>
+        )}
         <input
           ref={textareaRef}
           type="text"
