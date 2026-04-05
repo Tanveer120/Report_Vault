@@ -5,6 +5,7 @@ import SqlEditor from '../../components/reports/SqlEditor';
 import ParamEditor from '../../components/reports/ParamEditor';
 import Input from '../../components/Input';
 import Textarea from '../../components/Textarea';
+import { SkeletonForm } from '../../components/Skeleton';
 import toast from 'react-hot-toast';
 
 export default function ReportEditorPage() {
@@ -62,11 +63,7 @@ export default function ReportEditorPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin-slow h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full" />
-      </div>
-    );
+    return <SkeletonForm />;
   }
 
   return (

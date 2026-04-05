@@ -1,6 +1,6 @@
 class SqlRewriter {
   rewriteInClause(sql, paramName) {
-    const gttKeyBind = `_gtt_key_${paramName}`;
+    const gttKeyBind = `gtt_key_${paramName}`;
     const pattern = new RegExp(
       `IN\\s*\\(\\s*:${paramName}\\s*\\)`,
       'gi'
@@ -14,7 +14,7 @@ class SqlRewriter {
   buildGttBinds(gttParams) {
     const binds = {};
     for (const param of gttParams) {
-      binds[`_gtt_key_${param.name}`] = param.name;
+      binds[`gtt_key_${param.name}`] = param.name;
     }
     return binds;
   }

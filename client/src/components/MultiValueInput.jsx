@@ -53,21 +53,41 @@ export default function MultiValueInput({ label, value = [], onChange, error, pl
     setIsFocused(false);
   };
 
+  const handleClearAll = () => {
+    onChange([]);
+    setInputValue('');
+  };
+
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-surface-700 mb-1">
-          {label}
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-surface-700">
+            {label}
+          </label>
+          {value.length > 0 && (
+            <button
+              type="button"
+              onClick={handleClearAll}
+              className="text-xs text-surface-400 hover:text-red-500 transition-colors"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
       )}
       <div
-        className={`min-h-[42px] border rounded-lg px-3 py-1.5 flex flex-wrap items-center gap-1.5 bg-white dark:bg-surface-800 transition-colors cursor-text ${
+        className={`min-h-[42px] max-h-[120px] overflow-y-auto border rounded-lg px-3 py-1.5 flex flex-wrap content-start items-start gap-1.5 bg-white dark:bg-surface-800 transition-colors cursor-text ${
           error
             ? 'border-red-500'
             : isFocused
               ? 'border-primary-500 ring-2 ring-primary-500/20'
               : 'border-surface-300 dark:border-surface-600'
         }`}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#3b82f6 transparent',
+        }}
         onClick={() => textareaRef.current?.focus()}
       >
         {value.map((tag, idx) => (

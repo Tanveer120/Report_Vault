@@ -35,7 +35,9 @@ class QueryEngine {
     try {
       connection.callTimeout = QUERY_TIMEOUT_MS;
 
-      const result = await connection.execute(expandedSql, binds, {
+      const finalBinds = this._filterUnusedBinds(expandedSql, binds);
+
+      const result = await connection.execute(expandedSql, finalBinds, {
         outFormat: oracledb.OUT_FORMAT_OBJECT,
         fetchArraySize: 1000,
       });
@@ -67,7 +69,9 @@ class QueryEngine {
       const gttBinds = this.sqlRewriter.buildGttBinds(classified.gtt);
       Object.assign(binds, gttBinds);
 
-      const result = await connection.execute(sql, binds, {
+      const finalBinds = this._filterUnusedBinds(sql, binds);
+
+      const result = await connection.execute(sql, finalBinds, {
         outFormat: oracledb.OUT_FORMAT_OBJECT,
         fetchArraySize: 1000,
       });
@@ -85,6 +89,18 @@ class QueryEngine {
     } finally {
       await connection.close();
     }
+  }
+
+  _filterUnusedBinds(sql, binds) {
+    const filtered = {};
+    for (const key of Object.keys(binds)) {
+      // Regex correctly matches :paramName adhering to word boundaries (handles case-insensitivity)
+      const placeholderPattern = new RegExp(`:\\b${key}\\b`, 'i');
+      if (placeholderPattern.test(sql)) {
+        filtered[key] = binds[key];
+      }
+    }
+    return filtered;
   }
 }
 

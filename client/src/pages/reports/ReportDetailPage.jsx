@@ -4,6 +4,7 @@ import apiClient from '../../api/apiClient';
 import DynamicParamForm from '../../components/reports/DynamicParamForm';
 import ResultsTable from '../../components/reports/ResultsTable';
 import ExecutionHistory from '../../components/reports/ExecutionHistory';
+import { SkeletonCard, SkeletonTable } from '../../components/Skeleton';
 import toast from 'react-hot-toast';
 
 export default function ReportDetailPage() {
@@ -81,8 +82,10 @@ export default function ReportDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin-slow h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full" />
+      <div className="space-y-6">
+        <div className="h-8 w-64 bg-surface-200 dark:bg-surface-700 rounded animate-pulse" />
+        <SkeletonCard />
+        <SkeletonTable />
       </div>
     );
   }

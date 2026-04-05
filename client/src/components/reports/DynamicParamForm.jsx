@@ -8,12 +8,14 @@ function ParamField({ param, value, onChange }) {
   switch (param.param_type) {
     case 'multi_value':
       return (
-        <MultiValueInput
-          label={param.param_label}
-          value={value || []}
-          onChange={(vals) => onChange(param.param_name, vals)}
-          placeholder={param.placeholder || 'Enter values, one per line'}
-        />
+        <div className="md:col-span-2 lg:col-span-3">
+          <MultiValueInput
+            label={param.param_label}
+            value={value || []}
+            onChange={(vals) => onChange(param.param_name, vals)}
+            placeholder={param.placeholder || 'Enter values, one per line'}
+          />
+        </div>
       );
 
     case 'select': {
@@ -72,6 +74,7 @@ function ParamField({ param, value, onChange }) {
           value={value || ''}
           onChange={(e) => onChange(param.param_name, e.target.value)}
           placeholder={param.placeholder}
+          autoResize
         />
       );
   }

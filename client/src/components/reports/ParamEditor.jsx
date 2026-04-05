@@ -153,7 +153,7 @@ export default function ParamEditor({ params, onChange }) {
 
       {params.map((param, index) => (
         <ParamRow
-          key={`param-${index}-${param.param_name}`}
+          key={`param-${index}`}
           param={param}
           index={index}
           onChange={handleParamChange}

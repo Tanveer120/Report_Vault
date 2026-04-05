@@ -26,7 +26,7 @@ export default function Sidebar({ open, onClose, onLogout }) {
             <p className="text-xs text-surface-400 mt-1">{user?.username}</p>
           </div>
 
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-hidden">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}

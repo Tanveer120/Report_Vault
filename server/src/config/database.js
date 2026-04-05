@@ -2,6 +2,9 @@ const oracledb = require('oracledb');
 const { loadEnvironment } = require('./environment');
 const logger = require('../utils/logger');
 
+// Ensure CLOBs are parsed back as Strings to avoid circular references (Lob objects)
+oracledb.fetchAsString = [oracledb.CLOB];
+
 let pool = null;
 
 async function initializePool() {
@@ -26,6 +29,19 @@ async function initializePool() {
       stmtCacheSize: env.ORACLE_STMT_CACHE_SIZE,
       prefetchRows: env.ORACLE_PREFETCH_ROWS,
     });
+
+    pool.execute = async function(sql, binds = [], options = {}) {
+      const connection = await this.getConnection();
+      try {
+        return await connection.execute(sql, binds, options);
+      } finally {
+        try {
+          await connection.close();
+        } catch (err) {
+          logger.error('Error closing connection:', err);
+        }
+      }
+    };
 
     logger.info(`Oracle connection pool created (min: ${env.ORACLE_POOL_MIN}, max: ${env.ORACLE_POOL_MAX})`);
     return pool;
